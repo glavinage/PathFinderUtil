@@ -15,10 +15,14 @@ public class PathChecker
 		this.endApect = end;
 		
 		//Makes sure there is the correct minimum of steps
-		if(solutionStep.getStepNumber() < minSteps - 1)
+		if (solutionStep.getStepNumber() < minSteps - 1)
 			return false;
 		//Checks if the solution is the correct ending aspect
-		if(solutionStep.getCurrentAspect().isValidPartnerAspect(end) == false)
+		Aspect aspect = solutionStep.getCurrentAspect();
+		if (!aspect.isValidPartnerAspect(end))
+			return false;
+		//Check if this node is enabled
+		if (!aspect.getEnabled())
 			return false;
 		
 		//Moves through the solution to the beginning for verification

@@ -5,15 +5,11 @@
  */
 package pathFinder;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
+import java.awt.Cursor;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.image.*;
-import java.io.*;
 import java.util.ArrayList;
-import javafx.scene.layout.Border;
-import javax.imageio.ImageIO;
+import java.awt.image.*;
+
 import javax.swing.*;
 
 
@@ -65,6 +61,7 @@ public class PathFrame extends javax.swing.JFrame
         textField1.setText("textField1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Research Helper");
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Start Aspect");
@@ -161,44 +158,33 @@ public class PathFrame extends javax.swing.JFrame
             endAspectChoice.add(a.getName());
         });
         
-        BufferedImage img = null;
+        ArrayList<Aspect> aspects = pathFinder.getAllAspectList();
+        int rowSize = (int)Math.ceil((float)aspects.size()/8.0);
         
-        //Load image onto button.
-        try
-        {
-            img = ImageIO.read(new File("aspects.png"));
-        
-            BufferedImage maskedImg = ApplyAlphaToImage(img);
-            int count = 0;
-            ArrayList<Aspect> aspects = pathFinder.getAllAspectList();
-            int rowSize = (int)Math.ceil((float)aspects.size()/8.0);
-            
-            GridLayout aspectsLayout = new GridLayout(rowSize, rowSize);
-            aspectsPanel.setLayout(aspectsLayout);
+        GridLayout aspectsLayout = new GridLayout(rowSize, rowSize);
+        aspectsPanel.setLayout(aspectsLayout);
 
-            for (Aspect a : aspects)
-            {
-                int x = count%8 * 64;
-                int y = count/8 * 64;
-                ImageIcon icon = new ImageIcon(img.getSubimage(x, y, 64, 64));
-                ImageIcon pressedIcon = new ImageIcon(maskedImg.getSubimage(x, y, 64, 64));
-                JToggleButton button = new JToggleButton(icon);
-                button.setSize(64, 64);
-                button.setSelectedIcon(pressedIcon);
-                button.setBorderPainted(false); 
-                button.setFocusPainted(false); 
-                button.setContentAreaFilled(false);
-                button.setOpaque(false);
-                button.setBorder(null);
-                aspectButtons.add(button);
-                aspectsPanel.add(button);
-
-                count++;
-            }
-        }
-        catch(IOException ex)
+        for (Aspect a : aspects)
         {
-            System.out.println(ex.getMessage());
+            ImageIcon icon = new ImageIcon(a.getImage());
+            ImageIcon pressedIcon = new ImageIcon(ApplyAlphaToImage(a.getImage()));
+            JToggleButton button = new JToggleButton(icon);
+            button.setSize(64, 64);
+            button.setSelectedIcon(pressedIcon);
+            button.setBorderPainted(false); 
+            button.setFocusPainted(false); 
+            button.setContentAreaFilled(false);
+            button.setOpaque(false);
+            button.setBorder(null);
+            button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            aspectButtons.add(button);
+            aspectsPanel.add(button);
+
+            button.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                	a.toggleEnabled();
+                }
+            });
         }
     }
     
@@ -206,16 +192,18 @@ public class PathFrame extends javax.swing.JFrame
     {
         int width = image.getWidth();
         int height = image.getHeight();
-
+        
         int[] imagePixels = image.getRGB(0, 0, width, height, null, 0, width);
 
         for (int i = 0; i < imagePixels.length; i++)
         {
-            int color = imagePixels[i] & 0x00ffffff; // Mask preexisting alpha
-            int preAlpha = imagePixels[i] >> 24;
-            preAlpha &= 0x0f000000;
-//            int alpha = maskPixels[i] << 24; // Shift green to alpha
-            imagePixels[i] = color | preAlpha;
+        	int rgb = imagePixels[i] & 0x00ffffff;
+        	int a = (imagePixels[i] >> 24) & 0x000000ff;
+
+        	//Divide a by 8
+        	a >>= 3;
+        	
+            imagePixels[i] = rgb + (a << 24);
         }
         BufferedImage returnImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
         returnImage.setRGB(0, 0, width, height, imagePixels, 0, width);

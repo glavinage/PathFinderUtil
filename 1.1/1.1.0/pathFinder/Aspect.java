@@ -1,6 +1,7 @@
 package pathFinder;
 
 import java.util.ArrayList;
+import java.awt.image.*;
 
 public class Aspect
 {
@@ -8,13 +9,17 @@ public class Aspect
 	private String componentA;
 	private String componentB;
 	private ArrayList<Aspect> compatibleAspects;
+	private BufferedImage image;
+	private boolean enabled;
 	
-	public Aspect(String aspectName, String compA, String compB)
+	public Aspect(String aspectName, String compA, String compB, BufferedImage aspectImage)
 	{
 		this.name = aspectName;
 		this.componentA = compA;
 		this.componentB = compB;
 		this.compatibleAspects = new ArrayList<Aspect>();
+		this.image = aspectImage;
+		this.enabled = true;
 	}
 	
 	//Returns true if the Partner Aspect is compatible with this aspect
@@ -70,6 +75,19 @@ public class Aspect
 	public ArrayList<Aspect> getCompatableAspects()
 	{
 		return this.compatibleAspects;
+	}
+	public BufferedImage getImage()
+	{
+		return this.image;
+	}
+	public boolean getEnabled()
+	{
+		return this.enabled;
+	}
+
+	public void toggleEnabled()
+	{
+		this.enabled = !this.enabled;
 	}
 	
 	//Overwrite Functions

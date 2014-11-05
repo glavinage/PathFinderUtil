@@ -1,12 +1,16 @@
 package pathFinder;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.awt.image.*;
+
+import javax.imageio.ImageIO;
 
 public class PathFinder
 {
@@ -30,33 +34,46 @@ public class PathFinder
 	{
 		//reads in the Research Aspects.csv
 		String csvFile = "Research Aspects.csv";
+		String pngFile = "aspects.png";
 		InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream(csvFile));
 		BufferedReader br = null;
 		String line = "";
 		String cvsSplitBy = ",";
+		int aspectNum = 0;
 	 
 		try {
-	 
+			BufferedImage wholeImage = ImageIO.read(new File(pngFile));
 			br = new BufferedReader(isr);;
 			br.readLine();//Ignore Header in .CSV file
 			while ((line = br.readLine()) != null) {
-	 
-			        // use comma as separator
+		        // use comma as separator
 				String[] aspectTemp = line.split(cvsSplitBy);
 	 
-				//reads from the line into the Aspect object
-				this.allAspectList.add(new Aspect(aspectTemp[0], aspectTemp[1], aspectTemp[2]));
+				//Don't add empty aspects (haven't found them yet...)
+				if (aspectTemp.length > 0)
+				{
+	                int xOffset = aspectNum%8 * 64;
+	                int yOffset = aspectNum/8 * 64;
+	                
+					//reads from the line into the Aspect object
+					this.allAspectList.add(new Aspect(aspectTemp[0], aspectTemp[1], aspectTemp[2], wholeImage.getSubimage(xOffset, yOffset, 64, 64)));
+				}
+				
+				aspectNum++;
 			}
 	 
 		} catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
+            System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
 			if (br != null) {
 				try {
 					br.close();
 				} catch (IOException e) {
+		            System.out.println(e.getMessage());
 					e.printStackTrace();
 				}
 			}
@@ -124,10 +141,14 @@ public class PathFinder
 			//grabs the front AspectStep from the queue
 			tempStep = this.nodesToCheck.poll();
 			
-			for(int i = 0; i < tempStep.getCurrentAspect().getCompatableAspects().size(); i++)
+			//Only add next nodes if this one is enabled (except for the start, obviously)
+			if (tempStep.getCurrentAspect().getEnabled() || tempStep.getPreviousStep() == null)
 			{
-				//Adds a new node to check to the queue for each possible path
-				this.nodesToCheck.add(new AspectStep(tempStep.getCurrentAspect().getCompatableAspects().get(i), tempStep));
+				for(Aspect a : tempStep.getCurrentAspect().getCompatableAspects())
+				{
+					//Adds a new node to check to the queue for each possible path
+					this.nodesToCheck.add(new AspectStep(a, tempStep));
+				}
 			}
 			
 		//loop repeats until the path is valid
