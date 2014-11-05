@@ -5,7 +5,16 @@
  */
 package pathFinder;
 
+import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.image.*;
+import java.io.*;
 import java.util.ArrayList;
+import javafx.scene.layout.Border;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 
 /**
@@ -15,6 +24,7 @@ import java.util.ArrayList;
 public class PathFrame extends javax.swing.JFrame
 {
     private final PathFinder pathFinder;
+    private ArrayList<JToggleButton> aspectButtons = new ArrayList<JToggleButton>();
     
     /**
      * Creates new form PathFrame
@@ -49,6 +59,8 @@ public class PathFrame extends javax.swing.JFrame
         jLabel3 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
         resultTextArea = new java.awt.List();
+        jSeparator2 = new javax.swing.JSeparator();
+        aspectsPanel = new javax.swing.JPanel();
 
         textField1.setText("textField1");
 
@@ -75,12 +87,25 @@ public class PathFrame extends javax.swing.JFrame
         resultTextArea.setEnabled(false);
         resultTextArea.setMultipleMode(true);
 
+        jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        javax.swing.GroupLayout aspectsPanelLayout = new javax.swing.GroupLayout(aspectsPanel);
+        aspectsPanel.setLayout(aspectsPanelLayout);
+        aspectsPanelLayout.setHorizontalGroup(
+            aspectsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 563, Short.MAX_VALUE)
+        );
+        aspectsPanelLayout.setVerticalGroup(
+            aspectsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(49, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(minLength, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -89,21 +114,28 @@ public class PathFrame extends javax.swing.JFrame
                     .addComponent(startAspectChoice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(endAspectChoice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(goButton, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(54, 54, 54)
+                .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(resultTextArea, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(aspectsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(aspectsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(resultTextArea, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(19, 19, 19)
                         .addComponent(startAspectChoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34)
                         .addComponent(jLabel3)
@@ -113,10 +145,9 @@ public class PathFrame extends javax.swing.JFrame
                         .addComponent(jLabel2)
                         .addGap(2, 2, 2)
                         .addComponent(endAspectChoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(59, 59, 59)
+                        .addGap(34, 34, 34)
                         .addComponent(goButton)
-                        .addGap(0, 46, Short.MAX_VALUE))
-                    .addComponent(resultTextArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 255, Short.MAX_VALUE)))
                 .addContainerGap())
         );
 
@@ -129,6 +160,67 @@ public class PathFrame extends javax.swing.JFrame
             startAspectChoice.add(a.getName());
             endAspectChoice.add(a.getName());
         });
+        
+        BufferedImage img = null;
+        
+        //Load image onto button.
+        try
+        {
+            img = ImageIO.read(new File("aspects.png"));
+        
+            BufferedImage maskedImg = ApplyAlphaToImage(img);
+            int count = 0;
+            ArrayList<Aspect> aspects = pathFinder.getAllAspectList();
+            int rowSize = (int)Math.ceil((float)aspects.size()/8.0);
+            
+            GridLayout aspectsLayout = new GridLayout(rowSize, rowSize);
+            aspectsPanel.setLayout(aspectsLayout);
+
+            for (Aspect a : aspects)
+            {
+                int x = count%8 * 64;
+                int y = count/8 * 64;
+                ImageIcon icon = new ImageIcon(img.getSubimage(x, y, 64, 64));
+                ImageIcon pressedIcon = new ImageIcon(maskedImg.getSubimage(x, y, 64, 64));
+                JToggleButton button = new JToggleButton(icon);
+                button.setSize(64, 64);
+                button.setSelectedIcon(pressedIcon);
+                button.setBorderPainted(false); 
+                button.setFocusPainted(false); 
+                button.setContentAreaFilled(false);
+                button.setOpaque(false);
+                button.setBorder(null);
+                aspectButtons.add(button);
+                aspectsPanel.add(button);
+
+                count++;
+            }
+        }
+        catch(IOException ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    public BufferedImage ApplyAlphaToImage(BufferedImage image)
+    {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        int[] imagePixels = image.getRGB(0, 0, width, height, null, 0, width);
+
+        for (int i = 0; i < imagePixels.length; i++)
+        {
+            int color = imagePixels[i] & 0x00ffffff; // Mask preexisting alpha
+            int preAlpha = imagePixels[i] >> 24;
+            preAlpha &= 0x0f000000;
+//            int alpha = maskPixels[i] << 24; // Shift green to alpha
+            imagePixels[i] = color | preAlpha;
+        }
+        BufferedImage returnImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+        returnImage.setRGB(0, 0, width, height, imagePixels, 0, width);
+        
+        return returnImage;
     }
     
     private void goButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goButtonActionPerformed
@@ -158,12 +250,14 @@ public class PathFrame extends javax.swing.JFrame
     }//GEN-LAST:event_goButtonActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel aspectsPanel;
     private java.awt.Choice endAspectChoice;
     private javax.swing.JButton goButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private java.awt.TextField minLength;
     private java.awt.List resultTextArea;
     private java.awt.Choice startAspectChoice;
