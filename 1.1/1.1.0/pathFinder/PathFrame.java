@@ -215,7 +215,6 @@ public class PathFrame extends javax.swing.JFrame
         String startAspectName = startAspectChoice.getSelectedItem();
         String endAspectName = endAspectChoice.getSelectedItem();
         String minLengthString = minLength.getText();
-        int minLengthInt = Integer.parseInt(minLengthString);
         Aspect startAspect = null;
         Aspect endAspect = null;
         
@@ -226,15 +225,24 @@ public class PathFrame extends javax.swing.JFrame
             if (a.getName().equals(endAspectName))
                 endAspect = a;
         }
-        
-        ArrayList<Aspect> l = pathFinder.findPath(startAspect, endAspect, minLengthInt);
 
         resultTextArea.removeAll();
         
-        for(int i = 0; i < l.size(); i++)
-        {
-            resultTextArea.add(l.get(i).getName() + "\n");
-        }
+		try
+		{
+	        int minLengthInt = Integer.parseInt(minLengthString);
+	        ArrayList<Aspect> l = pathFinder.findPath(startAspect, endAspect, minLengthInt);
+	
+	        
+	        for(int i = 0; i < l.size(); i++)
+	        {
+	            resultTextArea.add(l.get(i).getName() + "\n");
+	        }
+		}
+		//Don't throw exception if they enter bad input, just don't try to find a path!
+		catch (NumberFormatException e)
+		{
+		}
     }//GEN-LAST:event_goButtonActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

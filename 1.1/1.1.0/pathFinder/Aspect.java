@@ -113,7 +113,7 @@ public class Aspect
 	{
 		if(this.getName().equals(a.getName()))
 		{
-                    return true;
+            return true;
 		}
 		
 		return false;

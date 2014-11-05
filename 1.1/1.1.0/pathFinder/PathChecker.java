@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class PathChecker
 {
-	private Aspect endApect;
+	private Aspect endAspect;
 	public PathChecker()
 	{
 		
@@ -12,7 +12,7 @@ public class PathChecker
 	
 	public boolean checkPathWorks(Aspect start, Aspect end, int minSteps, AspectStep solutionStep)
 	{
-		this.endApect = end;
+		this.endAspect = end;
 		
 		//Makes sure there is the correct minimum of steps
 		if (solutionStep.getStepNumber() < minSteps - 1)
@@ -41,7 +41,7 @@ public class PathChecker
 		//An array of aspects that make the solution to return
 		ArrayList<Aspect> solution = new ArrayList<Aspect>();
 		
-		solution.add(this.endApect);
+		solution.add(this.endAspect);
 		
 		AspectStep temp = solutionStep;
 		do

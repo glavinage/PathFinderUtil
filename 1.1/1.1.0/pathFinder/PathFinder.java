@@ -15,7 +15,6 @@ import javax.imageio.ImageIO;
 public class PathFinder
 {
 	private ArrayList<Aspect> allAspectList;
-	private ArrayList<Aspect> ownedAspectList;
 	private Queue<AspectStep> nodesToCheck;
 	private PathChecker check;
 	
@@ -81,48 +80,11 @@ public class PathFinder
 		
 		//Save a bit of memory
 		this.allAspectList.trimToSize();
-				
-		//Initialize the ownedAspectList to hold all aspects by default, allows the user to remove aspects from consideration
-		this.ownedAspectList = new ArrayList<Aspect>(this.allAspectList);
 		
-		//Sets each aspect's partners
-		this.editAspects();
-	}
-	
-	/*
-	 * Call this method each time a calculation is run. It removes the aspects that are not to be included
-	 * Pass a list of the aspects by String name
-	 */
-	public void updateOwnedAspectList(ArrayList<String> aspectsToRemove)
-	{
-		//Initialize the ownedAspectList to hold all aspects by default, allows the user to remove aspects from consideration
-		this.ownedAspectList = new ArrayList<Aspect>(this.allAspectList);
-		
-		for(int i = 0; i < aspectsToRemove.size(); i++)
+		//Pre-calculation of partner aspects
+		for (Aspect a : this.allAspectList)
 		{
-			for(int j = 0; j < this.ownedAspectList.size(); j++)
-			{
-				if(aspectsToRemove.get(i).equals(this.ownedAspectList.get(j).getName()))
-				{
-					this.ownedAspectList.remove(j);
-				}
-			}
-		}
-		
-		//Save a bit of memory
-		this.ownedAspectList.trimToSize();
-		
-		//Sets each aspect's partners
-		this.editAspects();
-	}
-	
-	//Sets the aspects to be with valid partners from ownedAspectList
-	private void editAspects()
-	{
-		for(int i = 0; i < this.ownedAspectList.size(); i++)
-		{
-			//
-			this.ownedAspectList.get(i).determinePartnerAspects(this.ownedAspectList);
+			a.determinePartnerAspects(this.allAspectList);
 		}
 	}
 	
@@ -161,9 +123,5 @@ public class PathFinder
 	public ArrayList<Aspect> getAllAspectList()
 	{
 		return this.allAspectList;
-	}
-	public ArrayList<Aspect> getOwnedAspectList()
-	{
-		return this.ownedAspectList;
 	}
 }
