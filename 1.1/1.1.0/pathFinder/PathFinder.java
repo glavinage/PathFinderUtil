@@ -94,30 +94,51 @@ public class PathFinder
 		this.nodesToCheck.clear();
 		//adds the starting node to the queue
 		this.nodesToCheck.add(new AspectStep(start, null));
+                
+                int currentStepNumber = 1;
+                ArrayList<String> stepFoundAspects = new ArrayList<String>();
 		
 		//Initialize the temp variable for the do loop
 		AspectStep tempStep;
 		
 		do
 		{
-			//grabs the front AspectStep from the queue
-			tempStep = this.nodesToCheck.poll();
-			
-			//Only add next nodes if this one is enabled (except for the start, obviously)
-			if (tempStep.getCurrentAspect().getEnabled() || tempStep.getPreviousStep() == null)
-			{
-				for(Aspect a : tempStep.getCurrentAspect().getCompatableAspects())
-				{
-					//Adds a new node to check to the queue for each possible path
-					this.nodesToCheck.add(new AspectStep(a, tempStep));
-				}
-			}
+                    //grabs the front AspectStep from the queue
+                    tempStep = this.nodesToCheck.poll();
+
+                    if (tempStep == null)
+                        break;
+                    
+                    //If we're on the next step, reset found aspects
+                    if (tempStep.getStepNumber() > currentStepNumber)
+                    {
+                        stepFoundAspects.clear();
+                        currentStepNumber++;
+                    }
+
+                    for(Aspect a : tempStep.getCurrentAspect().getCompatableAspects())
+                    {
+                        if (a.getEnabled() && !stepFoundAspects.contains(a.getName()))
+                        {
+                            //Adds a new node to check to the queue for each possible path
+                            this.nodesToCheck.add(new AspectStep(a, tempStep));
+
+                            stepFoundAspects.add(a.getName());
+                        }
+                    }
 			
 		//loop repeats until the path is valid
 		}while(!this.check.checkPathWorks(start, end, minSteps, tempStep));
 		
-		//returns the valid path based on the tempStep's recursive pointers
-		return this.check.getSolution(tempStep);
+                if (tempStep != null)
+                {
+                    //returns the valid path based on the tempStep's recursive pointers
+                    return this.check.getSolution(tempStep);
+                }
+                else
+                {
+                    return null;
+                }
 	}
 	
 	public ArrayList<Aspect> getAllAspectList()

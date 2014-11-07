@@ -5,11 +5,15 @@
  */
 package pathFinder;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.GridLayout;
+import java.awt.List;
 import java.util.ArrayList;
 import java.awt.image.*;
-
+import java.awt.datatransfer.*;
+import java.awt.Toolkit;
+import java.awt.event.*;
 import javax.swing.*;
 
 
@@ -54,9 +58,11 @@ public class PathFrame extends javax.swing.JFrame
         minLength = new java.awt.TextField();
         jLabel3 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        resultTextArea = new java.awt.List();
         jSeparator2 = new javax.swing.JSeparator();
         aspectsPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        resultsList = new javax.swing.JList();
+        clipboardButton = new javax.swing.JButton();
 
         textField1.setText("textField1");
 
@@ -81,21 +87,28 @@ public class PathFrame extends javax.swing.JFrame
 
         jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
-        resultTextArea.setEnabled(false);
-        resultTextArea.setMultipleMode(true);
-
         jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
         javax.swing.GroupLayout aspectsPanelLayout = new javax.swing.GroupLayout(aspectsPanel);
         aspectsPanel.setLayout(aspectsPanelLayout);
         aspectsPanelLayout.setHorizontalGroup(
             aspectsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 563, Short.MAX_VALUE)
+            .addGap(0, 580, Short.MAX_VALUE)
         );
         aspectsPanelLayout.setVerticalGroup(
             aspectsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
+
+        resultsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane1.setViewportView(resultsList);
+
+        clipboardButton.setText("Copy To Clipboard");
+        clipboardButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clipboardButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -114,38 +127,46 @@ public class PathFrame extends javax.swing.JFrame
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resultTextArea, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(clipboardButton, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(aspectsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(aspectsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(resultTextArea, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
                         .addComponent(jLabel1)
-                        .addGap(19, 19, 19)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(startAspectChoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(minLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
+                        .addGap(26, 26, 26)
                         .addComponent(jLabel2)
-                        .addGap(2, 2, 2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(endAspectChoice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34)
                         .addComponent(goButton)
-                        .addGap(0, 255, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addContainerGap(268, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jSeparator2, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jScrollPane1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(clipboardButton))
+                            .addComponent(aspectsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addContainerGap())))
         );
 
         pack();
@@ -226,36 +247,60 @@ public class PathFrame extends javax.swing.JFrame
                 endAspect = a;
         }
 
-        resultTextArea.removeAll();
+        ArrayList<String> resultStrings = new ArrayList<String>();
+        try
+        {
+            int minLengthInt = Integer.parseInt(minLengthString);
+            ArrayList<Aspect> l = pathFinder.findPath(startAspect, endAspect, minLengthInt);
+
+            if (l != null)
+            {
+                for (Aspect a : l) {
+                    resultStrings.add(a.getName());
+                }
+            }
+            else
+            {
+                resultStrings.add("Could not find path from");
+                resultStrings.add("" + startAspectName + " to " + endAspectName + ".");
+            }
+        }
+        //Don't throw exception if they enter bad input, just don't try to find a path!
+        catch (NumberFormatException e)
+        {
+        }
         
-		try
-		{
-	        int minLengthInt = Integer.parseInt(minLengthString);
-	        ArrayList<Aspect> l = pathFinder.findPath(startAspect, endAspect, minLengthInt);
-	
-	        
-	        for(int i = 0; i < l.size(); i++)
-	        {
-	            resultTextArea.add(l.get(i).getName() + "\n");
-	        }
-		}
-		//Don't throw exception if they enter bad input, just don't try to find a path!
-		catch (NumberFormatException e)
-		{
-		}
+        resultsList.setListData(resultStrings.toArray());
+        resultsList.revalidate();
+        resultsList.repaint();
     }//GEN-LAST:event_goButtonActionPerformed
+
+    private void clipboardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clipboardButtonActionPerformed
+        String resultsString = "";
+        ListModel resultsModel = resultsList.getModel();
+        
+        for(int i=0; i < resultsModel.getSize(); i++){
+            resultsString += resultsModel.getElementAt(i) + "\n";
+        }
+        
+        StringSelection stringSelection = new StringSelection (resultsString);
+        Clipboard clpbrd = Toolkit.getDefaultToolkit ().getSystemClipboard ();
+        clpbrd.setContents (stringSelection, null);
+    }//GEN-LAST:event_clipboardButtonActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel aspectsPanel;
+    private javax.swing.JButton clipboardButton;
     private java.awt.Choice endAspectChoice;
     private javax.swing.JButton goButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private java.awt.TextField minLength;
-    private java.awt.List resultTextArea;
+    private javax.swing.JList resultsList;
     private java.awt.Choice startAspectChoice;
     private java.awt.TextField textField1;
     // End of variables declaration//GEN-END:variables
