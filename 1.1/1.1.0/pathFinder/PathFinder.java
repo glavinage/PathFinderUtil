@@ -20,8 +20,8 @@ public class PathFinder
 
 	public PathFinder()
 	{
-		this.allAspectList = new ArrayList<Aspect>();
-		this.nodesToCheck = new LinkedList<AspectStep>();
+		this.allAspectList = new ArrayList<>();
+		this.nodesToCheck = new LinkedList<>();
 		this.check = new PathChecker();
 
 		// method used to simply constructor
@@ -96,8 +96,12 @@ public class PathFinder
 		{
 			a.determinePartnerAspects(this.allAspectList);
 			a.determineComponentAspect(this.allAspectList);
-			a.sortByPrimalCost();
 		}
+                
+		for(Aspect a : this.allAspectList)
+		{
+			a.sortByPrimalCost();
+                }
 	}
 
 	public ArrayList<Aspect> findPath(Aspect start, Aspect end, int minSteps)
@@ -108,7 +112,7 @@ public class PathFinder
 		this.nodesToCheck.add(new AspectStep(start, null));
 
 		int currentStepNumber = 1;
-		ArrayList<String> stepFoundAspects = new ArrayList<String>();
+		ArrayList<String> stepFoundAspects = new ArrayList<>();
 
 		// Initialize the temp variable for the do loop
 		AspectStep tempStep;

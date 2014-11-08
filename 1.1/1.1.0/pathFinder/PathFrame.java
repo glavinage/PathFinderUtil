@@ -24,7 +24,7 @@ import javax.swing.ListModel;
 public class PathFrame extends javax.swing.JFrame
 {
 	private final PathFinder pathFinder;
-	private ArrayList<JToggleButton> aspectButtons = new ArrayList<JToggleButton>();
+	private ArrayList<JToggleButton> aspectButtons = new ArrayList<>();
 
 	/**
 	 * Creates new form PathFrame
@@ -247,13 +247,9 @@ public class PathFrame extends javax.swing.JFrame
 			aspectButtons.add(button);
 			aspectsPanel.add(button);
 
-			button.addActionListener(new java.awt.event.ActionListener()
-			{
-				public void actionPerformed(java.awt.event.ActionEvent evt)
-				{
-					a.toggleEnabled();
-				}
-			});
+			button.addActionListener((java.awt.event.ActionEvent evt) -> {
+                            a.toggleEnabled();
+                        });
 		}
 	}
 
@@ -296,7 +292,7 @@ public class PathFrame extends javax.swing.JFrame
 				endAspect = a;
 		}
 
-		ArrayList<String> resultStrings = new ArrayList<String>();
+		ArrayList<String> resultStrings = new ArrayList<>();
 		try
 		{
 			int minLengthInt = Integer.parseInt(minLengthString);
